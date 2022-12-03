@@ -24,6 +24,35 @@ pub fn day_03_1(data: &[String]) -> u32 {
         .sum()
 }
 
+/// The solution to task 2 of day 3.
+pub fn day_03_2(data: &[String]) -> u32 {
+    data.chunks(3)
+        .map(|chunk| {
+            chunk
+                .iter()
+                .map(|rucksack| rucksack.chars().collect::<HashSet<_>>())
+                .collect::<Vec<_>>()
+        })
+        .map(|chunk| {
+            chunk[0]
+                .intersection(&chunk[1])
+                .cloned()
+                .collect::<HashSet<_>>()
+                .intersection(&chunk[2])
+                .cloned()
+                .last()
+                .unwrap()
+        })
+        .map(|error| {
+            if error.is_ascii_lowercase() {
+                error as u32 - 96
+            } else {
+                error as u32 - 38
+            }
+        })
+        .sum()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -39,5 +68,18 @@ mod tests {
             "CrZsJsPPZsGzwwsLwLmpwMDw".to_string(),
         ];
         assert_eq!(day_03_1(&input), 157);
+    }
+
+    #[test]
+    fn test_day_03_2() {
+        let input = vec![
+            "vJrwpWtwJgWrhcsFMMfFFhFp".to_string(),
+            "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL".to_string(),
+            "PmmdzqPrVvPwwTWBwg".to_string(),
+            "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn".to_string(),
+            "ttgJtRGJQctTZtZT".to_string(),
+            "CrZsJsPPZsGzwwsLwLmpwMDw".to_string(),
+        ];
+        assert_eq!(day_03_2(&input), 70);
     }
 }
