@@ -5,7 +5,7 @@ use std::collections::HashSet;
 
 /// The solution to task 1 of day 3.
 pub fn day_03_1(data: &[String]) -> u32 {
-    data.into_iter()
+    data.iter()
         .map(|line| {
             let (first, second) = line.trim().split_at(line.len() / 2);
             *first
