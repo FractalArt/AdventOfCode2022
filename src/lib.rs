@@ -14,6 +14,7 @@ pub mod day_01;
 pub mod day_02;
 pub mod day_03;
 pub mod day_04;
+pub mod day_05;
 pub mod day_06;
 
 /// Read the data from the input file.
@@ -30,7 +31,7 @@ where
     let f = File::open(path)?;
     let vec = BufReader::new(f)
         .lines()
-        .map(|l| l.unwrap().trim().parse::<T>().unwrap())
+        .map(|l| l.unwrap().parse::<T>().unwrap())
         .collect();
 
     Ok(vec)
