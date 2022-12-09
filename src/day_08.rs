@@ -1,6 +1,7 @@
 //! # Advent of Code 2022 - Day 8
 //!
 //! This module contains the solution of the [second day's challenges](https://adventofcode.com/2022/day/8).
+use itertools::Itertools;
 
 /// The solution to task 1 of day 8.
 pub fn day_08_1(data: &[String]) -> usize {
@@ -57,7 +58,54 @@ pub fn day_08_2(data: &[String]) -> usize {
         .iter()
         .map(|row| row.chars().map(|x| x.to_digit(10).unwrap()).collect())
         .collect();
-    3
+
+    (1..matrix.len() - 1)
+        .cartesian_product(1..matrix.len() - 1)
+        .map(|(row, col)| {
+            let height = matrix[row][col];
+            let mut sum = 0;
+            let mut prod = 1;
+            for r in (0..row).rev() {
+                sum += 1;
+                if matrix[r][col] >= height {
+                    break;
+                }
+            }
+
+            prod *= sum;
+            sum = 0;
+
+            for r in matrix.iter().skip(row + 1) {
+                sum += 1;
+                if r[col] >= height {
+                    break;
+                }
+            }
+
+            prod *= sum;
+            sum = 0;
+
+            for c in (0..col).rev() {
+                sum += 1;
+                if matrix[row][c] >= height {
+                    break;
+                }
+            }
+
+            prod *= sum;
+            sum = 0;
+
+            for c in col + 1..matrix.len() {
+                sum += 1;
+                if matrix[row][c] >= height {
+                    break;
+                }
+            }
+
+            prod * sum
+        })
+        .max()
+        .unwrap()
 }
 
 #[cfg(test)]
@@ -75,5 +123,18 @@ mod tests {
         ];
 
         assert_eq!(day_08_1(&input), 21);
+    }
+
+    #[test]
+    fn test_day_08_2() {
+        let input = vec![
+            "30373".to_string(),
+            "25512".to_string(),
+            "65332".to_string(),
+            "33549".to_string(),
+            "35390".to_string(),
+        ];
+
+        assert_eq!(day_08_2(&input), 8);
     }
 }

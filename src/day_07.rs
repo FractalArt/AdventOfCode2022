@@ -3,7 +3,6 @@
 //! This module contains the solution of the [second day's challenges](https://adventofcode.com/2022/day/7).
 use std::collections::HashMap;
 use std::collections::VecDeque;
-use std::env::current_dir;
 
 /// The solution to task 1 of day 7.
 pub fn day_07(data: &[String]) -> usize {
