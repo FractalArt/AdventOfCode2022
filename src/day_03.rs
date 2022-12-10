@@ -1,6 +1,6 @@
 //! # Advent of Code 2022 - Day 3
 //!
-//! This module contains the solution of the [second day's challenges](https://adventofcode.com/2022/day/3).
+//! This module contains the solution of the [third day's challenges](https://adventofcode.com/2022/day/3).
 use std::collections::HashSet;
 
 /// The solution to task 1 of day 3.

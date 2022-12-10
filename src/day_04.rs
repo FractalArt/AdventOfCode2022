@@ -1,8 +1,8 @@
 //! # Advent of Code 2022 - Day 4
 //!
-//! This module contains the solution of the [second day's challenges](https://adventofcode.com/2022/day/4).
+//! This module contains the solution of the [fourth day's challenges](https://adventofcode.com/2022/day/4).
 
-/// The solution to task 1 of day 4.
+/// The solution of day 4.
 pub fn day_04(data: &[String], partial_overlap: bool) -> usize {
     data.iter()
         .map(|line| line.split(',').collect::<Vec<_>>())

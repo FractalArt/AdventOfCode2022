@@ -1,6 +1,6 @@
 //! # Advent of Code 2022 - Day 8
 //!
-//! This module contains the solution of the [second day's challenges](https://adventofcode.com/2022/day/8).
+//! This module contains the solution of the [eigth day's challenges](https://adventofcode.com/2022/day/8).
 use itertools::Itertools;
 
 /// The solution to task 1 of day 8.

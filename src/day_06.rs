@@ -1,9 +1,9 @@
 //! # Advent of Code 2022 - Day 6
 //!
-//! This module contains the solution of the [second day's challenges](https://adventofcode.com/2022/day/6).
+//! This module contains the solution of the [sixth day's challenges](https://adventofcode.com/2022/day/6).
 use std::collections::HashSet;
 
-/// The solution to task 1 of day 6.
+/// The solution of day 6.
 pub fn day_06(data: &str, take: usize) -> usize {
     data.as_bytes()
         .windows(take)

@@ -1,6 +1,6 @@
 //! # Advent of Code 2022 - Day 5
 //!
-//! This module contains the solution of the [second day's challenges](https://adventofcode.com/2022/day/5).
+//! This module contains the solution of the [fifth day's challenges](https://adventofcode.com/2022/day/5).
 use regex::Regex;
 use std::collections::LinkedList;
 
