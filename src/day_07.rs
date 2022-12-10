@@ -1,15 +1,24 @@
 //! # Advent of Code 2022 - Day 7
 //!
 //! This module contains the solution of the [seventh day's challenges](https://adventofcode.com/2022/day/7).
+use std::collections::hash_map::DefaultHasher;
 use std::collections::HashMap;
 use std::collections::HashSet;
+use std::hash::Hash;
+use std::hash::Hasher;
 
-use itertools::Itertools;
+fn hash(v: &[&str], remain: &[&str]) -> u64 {
+    let mut hasher = DefaultHasher::new();
+    v.iter()
+        .chain(remain.iter())
+        .for_each(|v| v.hash(&mut hasher));
+    hasher.finish()
+}
 
-fn day_07(data: &[String]) -> HashMap<Vec<&str>, usize> {
+fn compute_dir_sizes(data: &[String]) -> HashMap<u64, usize> {
     let mut parents = Vec::<&str>::new();
-    let mut directory_sizes = HashMap::<Vec<&str>, usize>::new();
-    let mut treated_files = HashSet::<Vec<&str>>::new();
+    let mut dir_sizes = HashMap::<u64, usize>::new();
+    let mut treated_files = HashSet::<u64>::new();
     let mut current = "/";
 
     data.iter().filter(|&line| line != "$ ls").for_each(|line| {
@@ -19,7 +28,7 @@ fn day_07(data: &[String]) -> HashMap<Vec<&str>, usize> {
                 "/" => {
                     current = "/";
                     parents = Default::default();
-                    directory_sizes.entry(vec!["/"]).or_insert(0);
+                    dir_sizes.entry(hash(&["/"], &[])).or_insert(0);
                 }
                 ".." => {
                     current = parents.pop().unwrap();
@@ -27,48 +36,42 @@ fn day_07(data: &[String]) -> HashMap<Vec<&str>, usize> {
                 d => {
                     parents.push(current);
                     current = d;
-                    directory_sizes
-                        .entry(parents.iter().cloned().chain([d]).collect())
-                        .or_insert(0);
                 }
             },
             ("dir", d) => {
-                directory_sizes
-                    .entry(parents.iter().chain([&d]).cloned().collect_vec())
-                    .or_insert(0);
+                dir_sizes.entry(hash(&parents, &[d])).or_insert(0);
             }
             (size, file) => {
                 let size = size.parse::<usize>().unwrap();
-                if !treated_files.contains(&[parents.as_slice(), &[current, file]].concat()) {
-                    *directory_sizes
-                        .entry(parents.iter().cloned().chain([current]).collect_vec())
-                        .or_insert(0) += size;
-                    treated_files.insert([parents.as_slice(), &[current, file]].concat());
+                let file_hash = hash(&parents, &[current, file]);
+                if !treated_files.contains(&file_hash) {
+                    treated_files.insert(file_hash);
+                    *dir_sizes.entry(hash(&parents, &[current])).or_insert(0) += size;
 
                     parents.iter().enumerate().for_each(|(idx, _)| {
-                        *directory_sizes
-                            .entry(parents[..idx + 1].iter().cloned().collect_vec())
-                            .or_insert(0) += size;
+                        *dir_sizes.entry(hash(&parents[..idx + 1], &[])).or_insert(0) += size;
                     })
                 }
             }
         }
     });
-    directory_sizes
+    dir_sizes
 }
 
 /// The solution to task 1 of day 7.
 pub fn day_07_1(data: &[String]) -> usize {
-    day_07(data).values().filter(|&&val| val <= 100000).sum()
+    compute_dir_sizes(data)
+        .values()
+        .filter(|&&val| val <= 100000)
+        .sum()
 }
 
 /// The solution to task 2 of day 7.
 pub fn day_07_2(data: &[String]) -> usize {
-    let dir_sizes = day_07(data);
+    let dir_sizes = compute_dir_sizes(data);
     let used = dir_sizes.values().max().unwrap();
-    day_07(data)
+    dir_sizes
         .values()
-        .map(|x| dbg!(x))
         .filter_map(|&val| (70000000 - used + val >= 30000000).then_some(val))
         .min()
         .unwrap()
