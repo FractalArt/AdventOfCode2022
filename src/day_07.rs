@@ -2,120 +2,65 @@
 //!
 //! This module contains the solution of the [second day's challenges](https://adventofcode.com/2022/day/7).
 use std::collections::HashMap;
-use std::collections::VecDeque;
+use std::collections::HashSet;
+
+use itertools::Itertools;
 
 /// The solution to task 1 of day 7.
 pub fn day_07(data: &[String]) -> usize {
-    //let mut parent_dirs = DirTree::new();
-    //let mut file_sizes = HashMap::<String, usize>::new();
-    //let mut current_dir = "/".to_string();
+    let mut parents = Vec::<&str>::new();
+    let mut directory_sizes = HashMap::<Vec<&str>, usize>::new();
+    let mut treated_files = HashSet::<Vec<&str>>::new();
+    let mut current = "/";
 
-    //for line in data {
-    //let split: Vec<_> = line.split(' ').collect();
-
-    //match (split[0], split[1]) {
-    //("$", "cd") => match split[2] {
-    //".." => {
-    //current_dir = parent_dirs.pop_back().unwrap();
-    //}
-    //"/" => {
-    //parent_dirs = DirTree::from([]);
-    //current_dir = "/".into();
-    //}
-    //d => {
-    //parent_dirs.push_back(current_dir);
-    //current_dir = d.into();
-    //}
-    //},
-    //("$", "ls") => {}
-    //("dir", d) => {
-    //file_sizes.entry(d.into()).or_insert(0);
-    //}
-    //(size, _) => {
-    //let parsed = size.parse::<usize>().unwrap();
-    //parent_dirs
-    //.iter()
-    //.for_each(|dir| *file_sizes.entry(dir.into()).or_insert(0) += parsed);
-    //*file_sizes.entry(current_dir.clone()).or_insert(0) += parsed;
-    //}
-    //}
-    //}
-
-    //println!("file_sizes: {:?}", &file_sizes);
-
-    //file_sizes.values().filter(|&size| size <= &100000).sum()
-
-    data.iter()
-        .filter(|&line| line != "$ ls")
-        .fold(
-            (VecDeque::new(), HashMap::<&str, usize>::new(), "/"),
-            |(mut parent_dirs, mut file_counts, mut current_dir), line| {
-                let split: Vec<_> = line.split(' ').collect();
-                match (split[0], split[1]) {
-                    ("$", "cd") => match split[2] {
-                        "/" => (Default::default(), file_counts, "/"),
-                        ".." => {
-                            current_dir = parent_dirs.pop_back().unwrap();
-                            (parent_dirs, file_counts, current_dir)
-                        }
-                        d => {
-                            parent_dirs.push_back(current_dir);
-                            file_counts.entry(d).or_insert(0);
-                            (parent_dirs, file_counts, d)
-                        }
-                    },
-                    ("dir", d) => {
-                        file_counts.entry(d).or_insert(0);
-                        (parent_dirs, file_counts, d)
-                    }
-                    (size, _) => {
-                        parent_dirs
-                            .iter()
-                            .chain([current_dir].iter())
-                            .for_each(|dir| {
-                                *file_counts.entry(dir).or_insert(0) +=
-                                    size.parse::<usize>().unwrap()
-                            });
-                        (parent_dirs, file_counts, current_dir)
-                    }
+    data.iter().filter(|&line| line != "$ ls").for_each(|line| {
+        let split: Vec<_> = line.split(' ').collect();
+        match (split[0], split[1]) {
+            ("$", "cd") => match split[2] {
+                "/" => {
+                    current = "/";
+                    parents = Default::default();
+                    directory_sizes.entry(vec!["/"]).or_insert(0);
+                }
+                ".." => {
+                    current = parents.pop().unwrap();
+                }
+                d => {
+                    parents.push(current);
+                    current = d;
+                    directory_sizes
+                        .entry(parents.iter().cloned().chain([d]).collect())
+                        .or_insert(0);
                 }
             },
-        )
-        .1
-        .values()
-        .filter(|&&val| val <= 100000)
-        .sum()
+            ("dir", d) => {
+                directory_sizes
+                    .entry(parents.iter().chain([&d]).cloned().collect_vec())
+                    .or_insert(0);
+            }
+            (size, file) => {
+                let size = size.parse::<usize>().unwrap();
+                if !treated_files.contains(&[parents.as_slice(), &[current, file]].concat()) {
+                    *directory_sizes
+                        .entry(parents.iter().cloned().chain([current]).collect_vec())
+                        .or_insert(0) += size;
+                    treated_files.insert([parents.as_slice(), &[current, file]].concat());
+
+                    parents.iter().enumerate().for_each(|(idx, _)| {
+                        *directory_sizes
+                            .entry(parents[..idx + 1].iter().cloned().collect_vec())
+                            .or_insert(0) += size;
+                    })
+                }
+            }
+        }
+    });
+    directory_sizes.values().filter(|&&val| val <= 100000).sum()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    //#[test]
-    //fn test_day_06_dir_size() {
-    //let sub_dirs: HashMap<String, VecDeque<String>> = vec![
-    //("a".into(), VecDeque::from(["e".into()])),
-    //("/".into(), VecDeque::from(["d".into(), "a".into()])),
-    //("e".into(), VecDeque::from([])),
-    //("d".into(), VecDeque::from([])),
-    //]
-    //.into_iter()
-    //.collect();
-
-    //let file_sizes: HashMap<String, usize> = vec![
-    //("/".into(), 23352670),
-    //("a".into(), 94269),
-    //("e".into(), 584),
-    //("d".into(), 24933642),
-    //]
-    //.into_iter()
-    //.collect();
-
-    //assert_eq!(directory_size("d", &file_sizes, &sub_dirs), 24933642);
-    //assert_eq!(directory_size("e", &file_sizes, &sub_dirs), 584);
-    //assert_eq!(directory_size("a", &file_sizes, &sub_dirs), 94853);
-    //assert_eq!(directory_size("/", &file_sizes, &sub_dirs), 48381165);
-    //}
 
     #[test]
     fn test_day_07_1() {
