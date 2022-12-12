@@ -56,7 +56,10 @@ pub fn day_10_2(data: &[String]) -> String {
 
     let mut string = vec![];
     cycles_x.iter().for_each(|(cycle, x)| {
-        if [x - 1, *x, x + 1].iter().any(|val| *val == cycle % 40 - 1) {
+        if (std::cmp::max(0, x - 1)..=std::cmp::min(x + 1, 39))
+            .into_iter()
+            .any(|val| val == (cycle - 1) % 40)
+        {
             string.push("#");
         } else {
             string.push(".");
@@ -382,7 +385,7 @@ mod tests {
 ###...###...###...###...###...###...###.
 ####....####....####....####....####....
 #####.....#####.....#####.....#####.....
-######......######......######......###.
+######......######......######......####
 #######.......#######.......#######.....\n";
 
         assert_eq!(day_10_2(&input), target);
