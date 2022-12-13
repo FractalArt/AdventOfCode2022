@@ -16,6 +16,7 @@ My solutions to the [AOC 2022](https://adventofcode.com/2022) problems in [Rust]
 | Day 8 | :heavy_check_mark:, :heavy_check_mark: |  
 | Day 9 | :heavy_check_mark:, :heavy_check_mark: |  
 | Day 10 | :heavy_check_mark:, :heavy_check_mark: |  
+| Day 11 | :heavy_check_mark:, :heavy_check_mark: |  
 
 ***
 
