@@ -10,4 +10,6 @@ fn test_day_12() {
         .unwrap();
     let task_1 = aoc2022::day_12::day_12_1(&data);
     assert_eq!(task_1, 456);
+    let task_2 = aoc2022::day_12::day_12_2(&data);
+    assert_eq!(task_2, 454);
 }

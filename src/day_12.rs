@@ -1,10 +1,18 @@
 //! # Advent of Code 2022 - Day 12
 //!
 //! This module contains the solution of the [twelfth day's challenges](https://adventofcode.com/2022/day/12).
+//!
+//! To solve the problem I had to learn about Dijkstra's algorithm which I had never heard of
+//! before. In the reference section below, I collect the resources I used to learn.
+//!
+//! ## References
+//! - [Dijkstra's algorithm on Wikipedia](https://en.wikipedia.org/wiki/Dijkstra's_algorithm)
+//! - [Dijkstra's algorithm on Computerphile](https://www.youtube.com/watch?v=GazC3A4OQTE)
 use std::collections::{HashMap, HashSet};
 
 type Pos = (usize, usize);
 
+#[derive(Clone)]
 struct HeightMap {
     start: (usize, usize),
     destination: (usize, usize),
@@ -61,10 +69,10 @@ impl HeightMap {
         ret
     }
 
-    fn get_minimum_steps(&self) -> usize {
+    fn get_minimum_steps(&self, start: Pos) -> Option<usize> {
         let mut visited: HashSet<Pos> = HashSet::new();
         let mut fringe: HashMap<Pos, usize> = HashMap::new();
-        let (mut current_pos, mut current_weight) = (self.start, 0);
+        let (mut current_pos, mut current_weight) = (start, 0);
 
         while current_pos != self.destination {
             self.get_neighbours(&current_pos)
@@ -81,19 +89,37 @@ impl HeightMap {
 
             visited.insert(current_pos);
 
-            let current = fringe.iter().min_by(|x, y| Ord::cmp(&x.1, &y.1)).unwrap();
-            current_pos = *current.0;
-            current_weight = *current.1;
-            fringe.remove(&current_pos);
+            if let Some(current) = fringe.iter().min_by(|x, y| Ord::cmp(&x.1, &y.1)) {
+                current_pos = *current.0;
+                current_weight = *current.1;
+                fringe.remove(&current_pos);
+            } else {
+                return None;
+            }
         }
 
-        current_weight
+        Some(current_weight)
     }
 }
 
-/// The solution of part 1 from day 11.
+/// The solution of part 1 from day 12.
 pub fn day_12_1(data: &str) -> usize {
-    HeightMap::from_string(data).get_minimum_steps()
+    let height_map = HeightMap::from_string(data);
+    height_map.get_minimum_steps(height_map.start).unwrap()
+}
+
+/// The solution of part 2 from day 12.
+pub fn day_12_2(data: &str) -> usize {
+    let height_map = HeightMap::from_string(data);
+    height_map
+        .map
+        .iter()
+        .enumerate()
+        .flat_map(|(y, row)| row.iter().enumerate().map(move |(x, c)| (x, y, c)))
+        .filter(|(_, _, &c)| c == b'a')
+        .filter_map(|(x, y, _)| height_map.get_minimum_steps((x, y)))
+        .min()
+        .unwrap()
 }
 
 #[cfg(test)]
@@ -148,5 +174,15 @@ accszExk
 acctuvwj
 abdefghi";
         assert_eq!(day_12_1(input), 31);
+    }
+
+    #[test]
+    fn test_day_12_2() {
+        let input = "Sabqponm
+abcryxxl
+accszExk
+acctuvwj
+abdefghi";
+        assert_eq!(day_12_2(input), 29);
     }
 }
