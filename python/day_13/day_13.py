@@ -3,7 +3,7 @@ import json as js
 def compare(l1, l2):
     for x, y in zip(l1, l2):
         match (isinstance(x, int), isinstance(y, int)):
-            case (True, True) if x == y: continue
+            case (True, True) | (False, False) if x == y: continue
             case (True, True): return x < y
             case (False, True): return compare(x, [y])
             case (True, False): return compare([x], y)
