@@ -10,4 +10,5 @@ itertools = "0.10.0"
 ndarray = {version = "0.15", features = ["rayon"]}
 regex = "1"
 lazy_static="1.4"
+serde_json = "1"
 
