@@ -9,5 +9,5 @@ fn test_day_13() {
         .read_to_string(&mut data)
         .unwrap();
     let task_1 = aoc2022::day_13::day_13_1(&data);
-    assert_eq!(task_1, 4902);
+    assert_eq!(task_1, 4734);
 }

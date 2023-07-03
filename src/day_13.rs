@@ -14,6 +14,7 @@ fn compare(l1: &Value, l2: &Value) -> bool {
                 (Number(xx), Number(yy)) => return xx.as_u64().unwrap() < yy.as_u64().unwrap(),
                 (Array(_), Number(yy)) => return compare(x, &json!([yy])),
                 (Number(xx), Array(_)) => return compare(&json!([xx]), y),
+                (Array(_), Array(_)) if x.as_array().unwrap() == y.as_array().unwrap() => continue,
                 (Array(_), Array(_)) => return compare(x, y),
                 _ => panic!("Only arrays and numbers possible"),
             }
